@@ -16,7 +16,8 @@ You can **add**, **edit**, and **delete** items with quantity and units like `kg
 ---
 
 ## 🖼️ Screenshots
-![WhatsApp Image 2025-08-15 at 14 31 35_48c9a770](https://github.com/user-attachments/assets/c80abd8e-1bea-46bb-9c84-a2ebbaa7a87d) Add Item ![WhatsApp Image 2025-08-15 at 14 31 35_d4f033c7](https://github.com/user-attachments/assets/fa987703-2b1d-41f3-9a51-6c3aadbb2548) Edit Item ![WhatsApp Image 2025-08-15 at 14 31 35_ffe44ad5](https://github.com/user-attachments/assets/dfddcbc8-cb86-4418-b712-d1280608e76e)
+![WhatsApp Image 2025-08-15 at 14 31 35_48c9a770](https://github.com/user-attachments/assets/c80abd8e-1bea-46bb-9c84-a2ebbaa7a87d) Add Item ![WhatsApp Image 2025-08-15 at 14 41 37_e7a08b12](https://github.com/user-attachments/assets/5b0de6be-921d-43f1-8df8-4599d871360b) Edit Item ![WhatsApp Image 2025-08-15 at 14 41 37_8555d702](https://github.com/user-attachments/assets/c345c6c9-d4d0-4da2-b4c7-6f7c701a42b7)
+
 
 
 
