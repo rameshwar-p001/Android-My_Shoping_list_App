@@ -36,7 +36,7 @@ fun shopingListApp() {
     var newItemName by remember { mutableStateOf("") }
     var newItemQuantity by remember { mutableStateOf("") }
     var newItemUnit by remember { mutableStateOf("kg") } // Default unit
-    val units = listOf("kg", "g", "l", "ml", "pcs") // Available units
+    val units = listOf("kg", "Gram", "Liter", "ml", "pcs") // Available units
 
     // ✏️ Edit dialog states
     var editDialogItem by remember { mutableStateOf<ShopingItem?>(null) }
