@@ -1,5 +1,11 @@
 package com.example.my_shoping_listday_7
 
+import android.Manifest
+import android.content.Context
+import android.widget.Button
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,12 +16,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.navigation.NavController
 
 // 🛒 Data class to store shopping list item details
 data class ShopingItem(
@@ -23,11 +32,19 @@ data class ShopingItem(
     var name: String,    // Item name
     var quantity: Int,   // Item quantity
     var unit: String,    // Unit of measurement (kg, g, l, ml, pcs)
-    var isEditing: Boolean = false // Editing state
+    var isEditing: Boolean = false, // Editing state
+    var address: String = ""
+
 )
 
 @Composable
-fun shopingListApp() {
+fun shopingListApp(
+    locationUtils: LocationUtils,
+    viewModel: LocationViewModel,
+    navController: NavController,
+    context: Context,
+    address: String
+) {
     // 📦 State for storing all shopping items
     var sItems by remember { mutableStateOf(listOf<ShopingItem>()) }
 
@@ -38,12 +55,50 @@ fun shopingListApp() {
     var newItemUnit by remember { mutableStateOf("kg") } // Default unit
     val units = listOf("kg", "Gram", "Liter", "ml", "pcs") // Available units
 
+
     // ✏️ Edit dialog states
     var editDialogItem by remember { mutableStateOf<ShopingItem?>(null) }
     var editName by remember { mutableStateOf("") }
     var editQuantity by remember { mutableStateOf("") }
     var editUnit by remember { mutableStateOf("kg") }
 
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = { permissions ->
+            if (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true &&
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+            ) {
+                // I have location to access
+                locationUtils.requestLocationUpdates(viewModel=viewModel)
+            } else {
+                // Ask for permission
+                val rationalRequired =
+                    ActivityCompat.shouldShowRequestPermissionRationale(
+                        context as MainActivity,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) ||
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                context,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+
+                if (rationalRequired) {
+                    Toast.makeText(
+                        context,
+                        "For this Feature you want location permission ",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "For this Feature you want enable the permission from setting ",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    )
     // 📌 Main UI Column
     Column(
         modifier = Modifier
@@ -144,6 +199,22 @@ fun shopingListApp() {
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth().padding(8.dp)
                     )
+
+                    Button(onClick = {
+                        if (locationUtils.hasLocationPermission(context)){
+                            locationUtils.requestLocationUpdates(viewModel)
+                            navController.navigate("locationscreen "){
+                                this.launchSingleTop
+                            }
+                        }else{
+                            requestPermissionLauncher.launch(arrayOf(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            ))
+                        }
+                    }) {
+                        Text("Address ")
+                    }
                     // 📏 Unit selection dropdown
                     DropdownMenuBox(
                         selectedUnit = newItemUnit,
@@ -258,8 +329,20 @@ fun ShopingListItem(
             ),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = item.name, modifier = Modifier.padding(20.dp))
-        Text(text = "Qnt: ${item.quantity} ${item.unit}", modifier = Modifier.padding(20.dp))
+        Column(modifier = Modifier.weight(1f).padding(8.dp)) {
+            Row{
+                Text(text = item.name, modifier = Modifier.padding(20.dp))
+                Text(text = "Qnt: ${item.quantity} ${item.unit}", modifier = Modifier.padding(20.dp))
+
+            }
+            Row (modifier = Modifier.fillMaxWidth()) {
+                Icon(imageVector = Icons.Default.LocationOn,contentDescription = null)
+                Text(text = item.address)
+            }
+        }
+
+
+
         Row(modifier = Modifier.padding(8.dp)) {
             IconButton(onClick = onEdit) {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
